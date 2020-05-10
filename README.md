@@ -1,6 +1,8 @@
 # iOSFacebook
 
-1) You need the following in your Info.plist
+1) Add your app as an app to Facebook (see https://developers.facebook.com). This will give you the app id and display name as below.
+
+2) Add the following in your Info.plist
 ```
 	<key>FacebookAppID</key>
 	<string>PUT-YOUR-APP-ID-HERE</string>
@@ -31,4 +33,15 @@
 See also  https://developers.facebook.com/docs/facebook-login/ios/   
 
 
-2) Add fb<YOUR-APP-ID> as a URL Scheme to your app project in Xcode under the "Info" tab.
+3) Add fb<PUT-YOUR-APP-ID-HERE> as a URL Scheme in your app project in Xcode under the "Info" tab.
+
+4) Add a Swift Package Manager dependency to this package to your project. E.g.,
+```
+    .package(url: "https://github.com/SyncServerII/iOSFacebook.git", .branch("master")),
+```
+
+5) Use this package in your project. E.g.,
+
+```
+    import iOSFacebook
+```
