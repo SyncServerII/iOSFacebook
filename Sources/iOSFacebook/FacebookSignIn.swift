@@ -76,15 +76,25 @@ public class FacebookSyncServerSignIn : GenericSignIn {
             return nil
         }
     }
-
-    public func signUserOut() {
+    
+    fileprivate func signUserOut(cancelOnly: Bool) {
         stickySignIn = false
         
         // Seem to have to do this before the `LoginManager().logOut()`, so we still have a valid token.
         reallySignUserOut()
         
         LoginManager().logOut()
-        delegate?.userIsSignedOut(self)
+        
+        if cancelOnly {
+            delegate?.signInCancelled(self)
+        }
+        else {
+            delegate?.userIsSignedOut(self)
+        }
+    }
+
+    public func signUserOut() {
+        signUserOut(cancelOnly: false)
     }
     
     // It seems really hard to fully sign a user out of Facebook. The following helps.
@@ -195,10 +205,12 @@ private class FacebookSignInButton : UIControl {
         // It seems like asking for specific permissions isn't necessary. Seems like we get default user profile permissions. See https://developers.facebook.com/docs/facebook-login/permissions#reference-default
         // signInButton.permissions = []
         
+        signInButton.isUserInteractionEnabled = false
+        signInButton.frame.origin = CGPoint.zero
         super.init(frame: signInButton.frame)
         addSubview(signInButton)
-        signInButton.autoresizingMask = [.flexibleWidth]
-        signInButton.addTarget(self, action: #selector(tap), for: .touchUpInside)
+        signInButton.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        addTarget(self, action: #selector(tap), for: .touchUpInside)
         clipsToBounds = true
     }
     
@@ -218,16 +230,17 @@ private class FacebookSignInButton : UIControl {
             completion(nil)
         }
     }
-    
+
     @objc private func tap() {
         if signIn.userIsSignedIn {
             signIn.signUserOut()
             logger.info("signUserOut: FacebookSignIn: explicit request to signout")
         }
         else {
-            signIn.delegate?.signInStarted(signIn)
+            signIn.delegate!.signInStarted(signIn)
             
             let loginManager = LoginManager()
+            loginManager.logOut()
             loginManager.logIn(permissions: [], viewController: nil) {[unowned self] loginResult in
                 switch loginResult {
                 case .failed(let error):
@@ -239,7 +252,7 @@ private class FacebookSignInButton : UIControl {
                 case .cancelled:
                     logger.info("User cancelled login.")
                     // 10/22/17; User cancelled sign-in flow. Seems fine to sign them out.
-                    self.signIn.signUserOut()
+                    self.signIn.signUserOut(cancelOnly: true)
                     logger.info("signUserOut: FacebookSignIn: user cancelled sign-in during explicit request to signin")
 
                 case .success(_, _, _):
@@ -263,5 +276,3 @@ private class FacebookSignInButton : UIControl {
         }
     }
 }
-
-
