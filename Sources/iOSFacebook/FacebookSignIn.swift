@@ -6,6 +6,8 @@ import ServerShared
 import iOSShared
 
 public class FacebookSyncServerSignIn : GenericSignIn {
+    public var signInName = "Facebook"
+    
     private var stickySignIn = false
 
     public var delegate:GenericSignInDelegate?
