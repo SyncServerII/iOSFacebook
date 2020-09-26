@@ -38,6 +38,6 @@ let package = Package(
             ]),
         .testTarget(
             name: "iOSFacebookTests",
-            dependencies: ["iOSFacebook"]),
+            dependencies: ["iOSFacebook", "iOSShared"]),
     ]
 )

@@ -3,12 +3,7 @@ import FacebookCore
 import ServerShared
 
 /// Enables you to sign in as a Facebook user to (a) create a new sharing user (must have an invitation from another SyncServer user), or (b) sign in as an existing sharing user.
-public class FacebookCredentials : GenericCredentials {
-    #warning("When I integrate `SignIns` into iOSBasics remove cloudStorageType from `GenericCredentials` and this class")
-    public var cloudStorageType: CloudStorageType? {
-        return nil
-    }
-    
+public class FacebookCredentials : GenericCredentials {    
     var accessToken:AccessToken!
     var userProfile:Profile!
     
