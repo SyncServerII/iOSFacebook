@@ -132,7 +132,6 @@ private class FacebookSignInButton : UIControl {
         super.init(frame: signInButton.frame)
         addSubview(signInButton)
         signInButton.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        signInButton.translatesAutoresizingMaskIntoConstraints = false
         addTarget(self, action: #selector(tap), for: .touchUpInside)
         clipsToBounds = true
     }
