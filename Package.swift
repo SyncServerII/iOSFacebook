@@ -23,7 +23,7 @@ let package = Package(
         // Not referencing the latest-- 6.5.2 because as of 5/3/20, https://developers.facebook.com/docs/ios/getting-started seems to indicate that version 6 isn't suitable.
         //.package(url: "https://github.com/facebook/facebook-ios-sdk.git", from: "5.10.0"),
 
-        .package(url: "https://github.com/facebook/facebook-ios-sdk.git", from: "6.5.2"),
+        .package(url: "https://github.com/facebook/facebook-ios-sdk.git", from: "8.2.0"),
 
         // .package(url: "https://github.com/SyncServerII/iOSSignIn.git", from: "0.0.1"),
     ],

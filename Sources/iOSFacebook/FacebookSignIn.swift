@@ -5,6 +5,11 @@ import iOSSignIn
 import ServerShared
 import iOSShared
 
+// Using the Facebook SDK in a sharing extension:
+// https://github.com/facebookarchive/facebook-swift-sdk/issues/177
+// https://stackoverflow.com/questions/40163451
+// https://github.com/facebook/facebook-ios-sdk/issues/1607
+
 public class FacebookSyncServerSignIn : GenericSignIn {
     public var signInName = "Facebook"
     
@@ -24,7 +29,7 @@ public class FacebookSyncServerSignIn : GenericSignIn {
     public func appLaunchSetup(userSignedIn: Bool, withLaunchOptions options:[UIApplication.LaunchOptionsKey : Any]?) {
     
         ApplicationDelegate.shared.application(UIApplication.shared, didFinishLaunchingWithOptions: options)
-        
+
         if userSignedIn {
             stickySignIn = true
             autoSignIn()
