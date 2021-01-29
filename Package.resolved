@@ -6,26 +6,26 @@
         "repositoryURL": "https://github.com/facebook/facebook-ios-sdk.git",
         "state": {
           "branch": null,
-          "revision": "cdb8c71fb7f22b4f1af05c21246c12c1aa49f89e",
-          "version": "6.5.2"
+          "revision": "fa5fab33bb440eed75122459965b82c7b944d9d8",
+          "version": "8.2.0"
         }
       },
       {
         "package": "iOSShared",
         "repositoryURL": "https://github.com/SyncServerII/iOSShared.git",
         "state": {
-          "branch": "master",
-          "revision": "8a0dc04110cc0cf8f4f17ec9e207825e3f4eea5b",
-          "version": null
+          "branch": null,
+          "revision": "d610a64a56dad57bfa8fa9c21daa19f135e4f2fd",
+          "version": "0.0.2"
         }
       },
       {
         "package": "iOSSignIn",
         "repositoryURL": "https://github.com/SyncServerII/iOSSignIn.git",
         "state": {
-          "branch": "master",
-          "revision": "f397dcdb6d5c282f28db7568863441232c76a3d6",
-          "version": null
+          "branch": null,
+          "revision": "607419febc79046269932d64ccdc2748a62654e4",
+          "version": "0.0.2"
         }
       },
       {
@@ -50,9 +50,18 @@
         "package": "ServerShared",
         "repositoryURL": "https://github.com/SyncServerII/ServerShared.git",
         "state": {
-          "branch": "master",
-          "revision": "371e1830b64557f37d60ff5dd728f60589227ff5",
-          "version": null
+          "branch": null,
+          "revision": "6c725c50cdb575c183943dcfcdb7394390a5e933",
+          "version": "0.0.4"
+        }
+      },
+      {
+        "package": "SQLite.swift",
+        "repositoryURL": "https://github.com/stephencelis/SQLite.swift.git",
+        "state": {
+          "branch": null,
+          "revision": "0a9893ec030501a3956bee572d6b4fdd3ae158a1",
+          "version": "0.12.2"
         }
       },
       {

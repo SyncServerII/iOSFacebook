@@ -16,9 +16,9 @@ let package = Package(
             targets: ["iOSFacebook"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/SyncServerII/iOSSignIn.git", .branch("master")),
-        .package(url: "https://github.com/SyncServerII/ServerShared.git", .branch("master")),
-        .package(url: "https://github.com/SyncServerII/iOSShared.git", .branch("master")),
+        .package(url: "https://github.com/SyncServerII/iOSSignIn.git", from: "0.0.2"),
+        .package(url: "https://github.com/SyncServerII/ServerShared.git", from: "0.0.4"),
+        .package(url: "https://github.com/SyncServerII/iOSShared.git", from: "0.0.2"),
         
         // Not referencing the latest-- 6.5.2 because as of 5/3/20, https://developers.facebook.com/docs/ios/getting-started seems to indicate that version 6 isn't suitable.
         //.package(url: "https://github.com/facebook/facebook-ios-sdk.git", from: "5.10.0"),
