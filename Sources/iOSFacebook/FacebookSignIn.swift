@@ -71,15 +71,15 @@ public class FacebookSyncServerSignIn : GenericSignIn {
 
     /// Returns non-nil if the user is signed in, and credentials could be refreshed during this app launch.
     public var credentials:GenericCredentials? {
-        if stickySignIn && AccessToken.current != nil {
-            let creds = FacebookCredentials()
-            creds.accessToken = AccessToken.current
-            creds.userProfile = Profile.current
-            return creds
-        }
-        else {
+        guard stickySignIn,
+            let _ = AccessToken.current, let _ = Profile.current else {
             return nil
         }
+        
+        let creds = FacebookCredentials()
+        creds.accessToken = AccessToken.current
+        creds.userProfile = Profile.current
+        return creds
     }
     
     func signUserOut(cancelOnly: Bool) {

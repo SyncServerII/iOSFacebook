@@ -12,11 +12,11 @@ public class FacebookCredentials : GenericCredentials {
     }
     
     public var username:String? {
-        return userProfile.name
+        return userProfile?.name
     }
     
     public var uiDisplayName:String? {
-        return userProfile.name
+        return userProfile?.name
     }
     
     public var httpRequestHeaders:[String:String] {

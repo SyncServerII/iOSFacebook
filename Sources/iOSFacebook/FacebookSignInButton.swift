@@ -5,15 +5,18 @@ import FacebookLogin
 import iOSShared
 
 class FacebookSignInButton : UIControl {
+    enum FacebookSignInButtonError: Error {
+        case noUserAttributes
+    }
+    
     var signInButton:FBLoginButton!
     weak var signIn: FacebookSyncServerSignIn!
-        
+    
     init() {
         // The parameters here are really unused-- I'm just using the FB LoginButton for it's visuals. I'm handling the actions myself because I need an indication of when the button is tapped, and can't seem to do that with FB's button. See the LoginManager below.
         signInButton = FBLoginButton()
         
         // It seems like asking for specific permissions isn't necessary. Seems like we get default user profile permissions. See https://developers.facebook.com/docs/facebook-login/permissions#reference-default
-        // signInButton.permissions = []
         
         signInButton.isUserInteractionEnabled = false
         signInButton.frame.origin = CGPoint.zero
@@ -28,15 +31,28 @@ class FacebookSignInButton : UIControl {
         fatalError("init(coder:) has not been implemented")
     }
     
+    let nameKey = "name"
+    let idKey = "id"
+    
     // Adapted from https://stackoverflow.com/questions/28131970
     private func fetchUserData(completion: @escaping (Error?)->()) {
-        let graphRequest = GraphRequest(graphPath: "me", parameters: ["fields":"id, name"])
+        let graphRequest = GraphRequest(graphPath: "me", parameters: ["fields":"\(nameKey), \(idKey)"])
         graphRequest.start { (connection, result, error) in
-            guard error == nil else {
+            if let error = error {
                 completion(error)
                 return
             }
             
+            guard let result = result as? [String: String],
+                let id = result[self.idKey],
+                let name = result[self.nameKey] else {
+                completion(FacebookSignInButtonError.noUserAttributes)
+                return
+            }
+
+            Profile.current = Profile(userID: id, firstName: nil, middleName: nil, lastName: nil, name: name, linkURL: nil, refreshDate: nil)
+            
+            logger.debug("result: \(result)")
             completion(nil)
         }
     }
@@ -80,10 +96,10 @@ class FacebookSignInButton : UIControl {
                             // 10/22/17; As above-- this is coming from an explicit request to sign the user in. Seems fine to sign them out after an error.
                             self.signIn.signUserOut()
                             logger.error("signUserOut: FacebookSignIn: UserProfile.fetch failed during explicit request to signin")
+                            return
                         }
-                        else {
-                            self.signIn.completeSignInProcess(autoSignIn: false)
-                        }
+                        
+                        self.signIn.completeSignInProcess(autoSignIn: false)
                     }
                 }
             }
