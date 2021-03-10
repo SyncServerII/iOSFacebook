@@ -1,4 +1,7 @@
 iOSFacebook
 
+Version 0.1.0 (3/9/21)
+	* Fix some sign in issues with user profile.
+
 Version 0.0.1 (1/28/21)
 	* Beta testing
