@@ -3,20 +3,32 @@ import FacebookCore
 import ServerShared
 
 /// Enables you to sign in as a Facebook user to (a) create a new sharing user (must have an invitation from another SyncServer user), or (b) sign in as an existing sharing user.
-public class FacebookCredentials : GenericCredentials {    
-    var accessToken:AccessToken!
-    var userProfile:Profile!
+public class FacebookCredentials : GenericCredentials {
+    private var savedCreds:FacebookSavedCreds!
+
+    var accessToken:AccessToken! {
+        return savedCreds.accessToken
+    }
+    
+    var userProfile:Profile! {
+        return savedCreds.userProfile
+    }
     
     public var userId:String {
-        return userProfile.userID
+        return savedCreds.userId
     }
     
     public var username:String? {
-        return userProfile?.name
+        return savedCreds.username
     }
     
     public var uiDisplayName:String? {
-        return userProfile?.name
+        return savedCreds.username
+    }
+    
+    // Helper
+    public init(savedCreds:FacebookSavedCreds) {
+        self.savedCreds = savedCreds
     }
     
     public var httpRequestHeaders:[String:String] {
@@ -28,6 +40,8 @@ public class FacebookCredentials : GenericCredentials {
     
     public func refreshCredentials(completion: @escaping (Error?) ->()) {
         completion(GenericCredentialsError.noRefreshAvailable)
-        // The AccessToken refresh method doesn't work if the access token has expired. So, I think it's not useful here.
+        FacebookSyncServerSignIn.refreshAccessToken { error in
+            completion(error)
+        }
     }
 }

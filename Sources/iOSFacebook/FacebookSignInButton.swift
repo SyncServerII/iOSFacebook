@@ -50,7 +50,7 @@ class FacebookSignInButton : UIControl {
                 return
             }
 
-            Profile.current = Profile(userID: id, firstName: nil, middleName: nil, lastName: nil, name: name, linkURL: nil, refreshDate: nil)
+            Profile.current = Profile(userID: id, firstName: nil, middleName: nil, lastName: nil, name: name, linkURL: nil, refreshDate: Date())
             
             logger.debug("result: \(result)")
             completion(nil)
@@ -90,14 +90,27 @@ class FacebookSignInButton : UIControl {
                     self.fetchUserData() { [weak self] error in
                         guard let self = self else { return }
                         
-                        if let error = error {
-                            Alert.show(withTitle: "Alert!", message: "Error fetching UserProfile: \(error)")
-                            logger.error("Error fetching UserProfile: \(error)")
+                        func handleError(_ error: Error?) {
+                            Alert.show(withTitle: "Alert!", message: "Error fetching UserProfile: \(String(describing: error))")
+                            logger.error("Error fetching UserProfile: \(String(describing: error))")
                             // 10/22/17; As above-- this is coming from an explicit request to sign the user in. Seems fine to sign them out after an error.
                             self.signIn.signUserOut()
                             logger.error("signUserOut: FacebookSignIn: UserProfile.fetch failed during explicit request to signin")
+                        }
+                        
+                        if let error = error {
+                            handleError(error)
                             return
                         }
+                        
+                        guard let profile = Profile.current,
+                            let username = profile.name,
+                            let accessToken = AccessToken.current else {
+                            handleError(nil)
+                            return
+                        }
+ 
+                        FacebookSyncServerSignIn.savedCreds = FacebookSavedCreds(userId: profile.userID, username: username, accessToken: accessToken)
                         
                         self.signIn.completeSignInProcess(autoSignIn: false)
                     }

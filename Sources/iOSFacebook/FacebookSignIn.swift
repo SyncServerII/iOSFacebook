@@ -4,6 +4,7 @@ import FacebookLogin
 import iOSSignIn
 import ServerShared
 import iOSShared
+import PersistentValue
 
 // Using the Facebook SDK in a sharing extension:
 // https://github.com/facebookarchive/facebook-swift-sdk/issues/177
@@ -11,6 +12,8 @@ import iOSShared
 // https://github.com/facebook/facebook-ios-sdk/issues/1607
 
 public class FacebookSyncServerSignIn : GenericSignIn {
+    static private let credentialsData = try! PersistentValue<Data>(name: "FacebookSyncServerSignIn.data", storage: .keyChain)
+
     public var signInName = "Facebook"
     
     private var stickySignIn = false
@@ -43,16 +46,60 @@ public class FacebookSyncServerSignIn : GenericSignIn {
         }
     }
     
-    private func autoSignIn() {
+    enum RefreshError: Error {
+        case noSavedCreds
+        case noUsername
+        case noAccessToken
+    }
+    
+    static func refreshAccessToken(completion:((Error?)->())?) {
+        // `AccessToken.refreshCurrentAccessToken` isn't working from the sharing extension. Going to hope for the best and not do a refresh.
+        if Bundle.isAppExtension {
+            completion?(nil)
+            return
+        }
+        
         AccessToken.refreshCurrentAccessToken { _, _, error in
-            if error == nil {
-                logger.info("FacebookSignIn: Sucessfully refreshed current access token")
-                self.completeSignInProcess(autoSignIn: true)
-            }
-            else {
+            if let error = error {
                 // I.e., I'm not going to force a sign-out because this seems like a generic error. E.g., could have been due to no network connection.
-                logger.error("FacebookSignIn: Error refreshing access token: \(error!)")
+                logger.error("FacebookSignIn: Error refreshing access token: \(error)")
+                completion?(error)
+                return
             }
+
+            guard let savedCreds = Self.savedCreds else {
+                logger.error("FacebookSignIn: Error getting savedCreds after refresh.")
+                completion?(RefreshError.noSavedCreds)
+                return
+            }
+
+            guard let username = savedCreds.username else {
+                logger.error("FacebookSignIn: Error getting username after refresh.")
+                completion?(RefreshError.noUsername)
+                return
+            }
+            
+            guard let accessToken = AccessToken.current else {
+                logger.error("FacebookSignIn: Error getting access token after refresh.")
+                completion?(RefreshError.noAccessToken)
+                return
+            }
+                        
+            Self.savedCreds = FacebookSavedCreds(userId: savedCreds.userId, username: username, accessToken: accessToken)
+            
+            logger.info("FacebookSignIn: Sucessfully refreshed current access token")
+            
+            completion?(nil)
+        }
+    }
+    
+    private func autoSignIn() {
+        Self.refreshAccessToken { error in
+            guard error == nil else {
+                return
+            }
+            
+            self.completeSignInProcess(autoSignIn: true)
         }
     }
     
@@ -69,21 +116,40 @@ public class FacebookSyncServerSignIn : GenericSignIn {
         return stickySignIn
     }
 
-    /// Returns non-nil if the user is signed in, and credentials could be refreshed during this app launch.
-    public var credentials:GenericCredentials? {
-        guard stickySignIn,
-            let _ = AccessToken.current, let _ = Profile.current else {
-            return nil
+    static var savedCreds:FacebookSavedCreds? {
+        set {
+            let data = try? newValue?.toData()
+#if DEBUG
+            if let data = data {
+                let string = String(data: data, encoding: .utf8)
+                logger.debug("savedCreds: \(String(describing: string))")
+            }
+#endif
+            Self.credentialsData.value = data
         }
         
-        let creds = FacebookCredentials()
-        creds.accessToken = AccessToken.current
-        creds.userProfile = Profile.current
-        return creds
+        get {
+            guard let data = Self.credentialsData.value,
+                let savedCreds = try? FacebookSavedCreds.fromData(data) else {
+                return nil
+            }
+            return savedCreds
+        }
+    }
+
+    /// Returns non-nil if the user is signed in, and credentials could be refreshed during this app launch.
+    public var credentials:GenericCredentials? {
+        if let savedCreds = Self.savedCreds {
+            return FacebookCredentials(savedCreds: savedCreds)
+        }
+        else {
+            return nil
+        }
     }
     
     func signUserOut(cancelOnly: Bool) {
         stickySignIn = false
+        Self.savedCreds = nil
         
         DispatchQueue.main.async {
             // Seem to have to do this before the `LoginManager().logOut()`, so we still have a valid token.
