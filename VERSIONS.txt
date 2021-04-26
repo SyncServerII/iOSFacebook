@@ -1,5 +1,8 @@
 iOSFacebook
 
+Version 0.1.3 (4/26/21)
+    * Fix credentials refresh issue.
+    
 Version 0.1.2 (3/10/21)
 	* Fixed issues with nil values.
 

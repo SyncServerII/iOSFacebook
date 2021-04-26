@@ -45,8 +45,10 @@ public class FacebookCredentials : GenericCredentials {
     }
     
     public func refreshCredentials(completion: @escaping (Error?) ->()) {
-        completion(GenericCredentialsError.noRefreshAvailable)
         FacebookSyncServerSignIn.refreshAccessToken { error in
+            if let error = error {
+                logger.error("\(error)")
+            }
             completion(error)
         }
     }
