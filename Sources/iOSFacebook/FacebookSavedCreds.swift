@@ -8,11 +8,12 @@
 import Foundation
 import iOSSignIn
 import iOSShared
-import FacebookCore
+import FacebookLogin
 
 public class FacebookSavedCreds: GenericCredentialsCodable, Equatable {
     public var userId:String
     public var username:String?
+    public var emailAddress: String!
     
     // Unused. Just for compliance to `GenericCredentialsCodable`. See `GoogleCredentials`.
     public var uiDisplayName:String?
@@ -47,15 +48,17 @@ public class FacebookSavedCreds: GenericCredentialsCodable, Equatable {
         }
     }
     
-    public init(userId:String, username:String?, accessToken: AccessToken) {
+    public init(userId:String, username:String?, email: String?, accessToken: AccessToken) {
         self.userId = userId
         self.username = username
+        self.emailAddress = email
         self._accessToken = Self.dataFromAccessToken(accessToken)
     }
     
     public static func == (lhs: FacebookSavedCreds, rhs: FacebookSavedCreds) -> Bool {
         return lhs.accessToken == rhs.accessToken &&
             lhs.userId == rhs.userId &&
-            lhs.username == rhs.username
+            lhs.username == rhs.username &&
+            lhs.emailAddress == rhs.emailAddress
     }
 }

@@ -85,7 +85,7 @@ public class FacebookSyncServerSignIn : GenericSignIn {
                 return
             }
                         
-            Self.savedCreds = FacebookSavedCreds(userId: savedCreds.userId, username: username, accessToken: accessToken)
+            Self.savedCreds = FacebookSavedCreds(userId: savedCreds.userId, username: username, email: savedCreds.emailAddress, accessToken: accessToken)
             
             logger.info("FacebookSignIn: Sucessfully refreshed current access token")
             

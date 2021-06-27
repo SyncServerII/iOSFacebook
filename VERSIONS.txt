@@ -1,5 +1,8 @@
 iOSFacebook
 
+Version 0.2.0 (6/26/21)
+    * Added emailAddress to credentials.
+    
 Version 0.1.3 (4/26/21)
     * Fix credentials refresh issue.
     

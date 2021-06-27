@@ -6,6 +6,10 @@ import iOSShared
 /// Enables you to sign in as a Facebook user to (a) create a new sharing user (must have an invitation from another SyncServer user), or (b) sign in as an existing sharing user.
 public class FacebookCredentials : GenericCredentials {
     private var savedCreds:FacebookSavedCreds!
+    
+    public var emailAddress: String! {
+        return savedCreds?.emailAddress
+    }
 
     var accessToken:AccessToken! {
         return savedCreds?.accessToken

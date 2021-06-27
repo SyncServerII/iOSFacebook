@@ -110,7 +110,7 @@ class FacebookSignInButton : UIControl {
                             return
                         }
  
-                        FacebookSyncServerSignIn.savedCreds = FacebookSavedCreds(userId: profile.userID, username: username, accessToken: accessToken)
+                        FacebookSyncServerSignIn.savedCreds = FacebookSavedCreds(userId: profile.userID, username: username, email: profile.email, accessToken: accessToken)
                         
                         self.signIn.completeSignInProcess(autoSignIn: false)
                     }
